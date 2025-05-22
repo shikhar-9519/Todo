@@ -1,0 +1,4 @@
+.custom-progressbar .CircularProgressbar text {
+  dominant-baseline: central;
+  text-anchor: middle;
+}

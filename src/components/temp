@@ -1,0 +1,121 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
+import { List, Pencil, Trash2 } from "lucide-react";
+import TaskForm from "./TaskForm";
+import TopNav from "./TopNav";
+import { DialogTitle } from "@radix-ui/react-dialog";
+
+interface Task {
+  id: string;
+  name: string;
+  status: string;
+  priority: string;
+  createdAt: string;
+}
+
+export default function TodoDetail() {
+  const { id } = useParams();
+  const [todo, setTodo] = useState<{ id: string; name: string; createdAt: string; tasks: Task[] } | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  useEffect(() => {
+    const data = localStorage.getItem("todo-lists");
+    if (data) {
+      const lists = JSON.parse(data);
+      const found = lists.find((l: any) => l.id === id);
+      if (found) {
+        if (!found.tasks) found.tasks = [];
+        setTodo(found);
+      }
+    }
+  }, [id]);
+
+  function saveTask(task: Task) {
+    if (!todo) return;
+    const updatedTasks = editingTask
+      ? todo.tasks.map((t) => (t.id === editingTask.id ? task : t))
+      : [...todo.tasks, task];
+
+    const updatedTodo = { ...todo, tasks: updatedTasks };
+    setTodo(updatedTodo);
+
+    const allTodos = JSON.parse(localStorage.getItem("todo-lists") || "[]");
+    const newTodos = allTodos.map((t: any) => (t.id === todo.id ? updatedTodo : t));
+    localStorage.setItem("todo-lists", JSON.stringify(newTodos));
+    setEditingTask(null);
+    setShowDialog(false);
+  }
+
+  function deleteTask(id: string) {
+    if (!todo) return;
+    const updatedTasks = todo.tasks.filter((t) => t.id !== id);
+    const updatedTodo = { ...todo, tasks: updatedTasks };
+    setTodo(updatedTodo);
+    const allTodos = JSON.parse(localStorage.getItem("todo-lists") || "[]");
+    const newTodos = allTodos.map((t: any) => (t.id === todo.id ? updatedTodo : t));
+    localStorage.setItem("todo-lists", JSON.stringify(newTodos));
+  }
+
+  if (!todo) return <div className="p-6">Loading...</div>;
+
+  return (
+    <>
+    <TopNav />
+    <div className="p-6 max-w-3xl mx-auto h-[88vh]">
+      <Button variant="ghost" className="mb-4" onClick={() => window.history.back()}>
+        ← Back
+      </Button>
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-xl font-semibold">{todo.name}</h2>
+          <p className="text-sm text-muted-foreground">
+            🕒 {todo.createdAt} | 📋 {todo.tasks.length} tasks
+          </p>
+        </div>
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogTrigger asChild>
+            <Button variant="destructive">+ Add Task</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+            <DialogTitle><div className="flex gap-2 items-center"><List color={"#D52121"}/>Task Details</div></DialogTitle>
+            </DialogHeader>
+            <TaskForm
+              onSave={saveTask}
+              onCancel={() => {
+                setEditingTask(null);
+                setShowDialog(false);
+              }}
+              defaultValue={editingTask}
+            />
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="space-y-2">
+        {todo.tasks.map((task) => (
+          <Card key={task.id} className="p-4 flex justify-between items-center">
+            <div>
+              <p className="font-medium">{task.name}</p>
+              <p className="text-sm text-muted-foreground">{task.status} | {task.priority}</p>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="icon" onClick={() => { setEditingTask(task); setShowDialog(true); }}>
+                <Pencil className="w-4 h-4" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={() => deleteTask(task.id)}>
+                <Trash2 className="w-4 h-4 text-destructive" />
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+    </>
+  );
+}
