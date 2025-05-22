@@ -14,12 +14,12 @@ interface TodoItemInterface {
 
 const TodoItem = ({detail, deleteList}: TodoItemInterface) => {
   const [showDialog, setShowDialog] = useState(false);
-  const percentage = (detail.completedTasks / detail.totalTasks) * 100;
+  const percentage = detail.totalTasks ? (detail.completedTasks / detail.totalTasks) * 100 : 0;
 
   return (
     <Card className="flex flex-row items-center justify-between p-4 w-full">
       <div className="flex items-center gap-4">
-        <div className=" w-18 h-18 custom-progressbar">
+        <div className=" w-14 h-14 custom-progressbar">
         <CircularProgressbar
         value={percentage}
         text={`${Math.round(percentage)}%`}
