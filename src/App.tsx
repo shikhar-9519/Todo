@@ -4,7 +4,7 @@ import SignUpPage from "./components/SignUpPage";
 import LoginPage from "./components/LoginPage";
 import TodoList from "./components/TodoList";
 import TodoDetail from "./components/TodoDetail";
-import './App.css'; // or './index.css'
+import './App.css';
 
 export default function App() {
   return (
