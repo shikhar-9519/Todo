@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
-import { AlignLeft, Calendar, Check, ChevronsDown, ChevronsUp, CircleArrowRight, Equal, List, Pencil, Trash2 } from "lucide-react";
+import { AlignLeft, Calendar, ChevronsDown, ChevronsUp, CircleArrowRight, Equal, List, Pencil, Trash2 } from "lucide-react";
 import TaskForm from "./TaskForm";
 import TopNav from "./TopNav";
 import { DialogTitle } from "@radix-ui/react-dialog";
